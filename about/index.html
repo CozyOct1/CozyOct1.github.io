@@ -11,17 +11,49 @@ html.dataset.dark = localStorage.dark;
 <li><strong>姓名：</strong> CozyOct1</li>
 <li><strong>性别：</strong> 男</li>
 <li><strong>年龄：</strong> 23岁</li>
-<li><strong>邮箱：</strong> <a href="mailto:&#110;&#x77;&#106;&#95;&#122;&#106;&#x75;&#x40;&#102;&#111;&#120;&#109;&#97;&#105;&#108;&#46;&#x63;&#x6f;&#109;">nwj_zju@foxmail.com</a></li>
+<li><strong>邮箱：</strong> <a href="mailto:&#110;&#119;&#x6a;&#95;&#122;&#x6a;&#117;&#64;&#102;&#111;&#x78;&#109;&#97;&#x69;&#108;&#x2e;&#x63;&#x6f;&#x6d;">nwj_zju@foxmail.com</a></li>
 <li><strong>现居地：</strong> 浙江省杭州市</li>
 </ul>
 <h2 id="教育背景"><a href="#教育背景" class="headerlink" title="教育背景"></a>教育背景</h2><h3 id="合肥工业大学-智能科学与技术-本科"><a href="#合肥工业大学-智能科学与技术-本科" class="headerlink" title="合肥工业大学 | 智能科学与技术 | 本科"></a>合肥工业大学 | 智能科学与技术 | 本科</h3><p><strong>2020.09 - 2024.06</strong></p>
 <h3 id="浙江大学-人工智能-硕士"><a href="#浙江大学-人工智能-硕士" class="headerlink" title="浙江大学 | 人工智能 | 硕士"></a>浙江大学 | 人工智能 | 硕士</h3><p><strong>2024.09 - 2027.06</strong></p>
-<h2 id="实习经历"><a href="#实习经历" class="headerlink" title="实习经历"></a>实习经历</h2><h3 id="哔哩哔哩股份有限公司-大模型-AIGC研发工程师"><a href="#哔哩哔哩股份有限公司-大模型-AIGC研发工程师" class="headerlink" title="哔哩哔哩股份有限公司 | 大模型&amp;AIGC研发工程师"></a>哔哩哔哩股份有限公司 | 大模型&amp;AIGC研发工程师</h3><p><strong>2025.05 - 2025.08</strong></p>
-<h4 id="微信小程序商城"><a href="#微信小程序商城" class="headerlink" title="微信小程序商城"></a>微信小程序商城</h4><p><strong>技术栈：</strong> 微信小程序 + Node.js + MongoDB</p>
+<h2 id="实习经历"><a href="#实习经历" class="headerlink" title="实习经历"></a>实习经历</h2><h3 id="哔哩哔哩股份有限公司-大模型-AIGC研发工程师-｜-数码推荐"><a href="#哔哩哔哩股份有限公司-大模型-AIGC研发工程师-｜-数码推荐" class="headerlink" title="哔哩哔哩股份有限公司 | 大模型&amp;AIGC研发工程师 ｜ 数码推荐"></a>哔哩哔哩股份有限公司 | 大模型&amp;AIGC研发工程师 ｜ 数码推荐</h3><p><strong>2025.05 - 2025.08</strong><br><strong>技术栈：</strong> Mulvus, Rerank, Embedding, RAG</p>
 <ul>
-<li>独立开发了一款电商类微信小程序，包含商品展示、购物车、订单管理等功能</li>
-<li>实现了微信支付集成和用户管理系统</li>
-<li>小程序月活用户达到5万+</li>
+<li>出卡判断服务：<ul>
+<li>客户端调用主搜接口，主搜通过数码推荐出卡服务判断用户查询是否符合出卡条件，符合条件则出带有可变标题的卡片提供数码推荐服务</li>
+<li>对于用户查询，基于数码行业关键词（描述、品牌、功能、价格、评测等）构建正则规则匹配并评分，评分≥0.7且命中强相关词，判断为出卡查询</li>
+</ul>
+</li>
+<li>数码推荐服务<ul>
+<li>对客户端提供可变标题、聊天、停止、历史标题记录、聊天历史记录、用户赞踩反馈、用户具体反馈等接口</li>
+<li>对于用户query，进行审核（敏感词+AI机审），通过后进行query改写（判断问题类型+规范化数码query）<ul>
+<li>数码问题：调用检索召回服务，后进行意图识别，根据检索召回和意图识别结果分为三种情况（检索为空+直接推荐+意图下钻）调用大模型生成不同的回答</li>
+<li>非数码问题：直接调用大模型生成普通对话回答</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>检索召回服务<ul>
+<li>对于用户query，进行意图识别（判断检索类型+型号提取分类）和query分析（正负向品牌提取+子查询拆分+主查询改写），然后进行型号标准化（模糊型号【时效、参数、品牌、热度】+具体型号）<ul>
+<li>用户评论：分为无sku、单sku、多sku三种情况<ul>
+<li>无sku：根据query检索评论库后BGE重排后，聚合评论返回</li>
+<li>单sku：根据机型检索评论库后BGE重排后，调用大模型精确分类，聚合评论后返回</li>
+<li>多sku：走机型推荐服务</li>
+</ul>
+</li>
+<li>机型推荐：分为无sku、有sku两种情况<ul>
+<li>无sku：根据意图和型号进行条件过滤，主查询和子查询并行检索后聚合返回</li>
+<li>有sku：根据机型并行检索后聚合返回</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>并行检索<ul>
+<li>Mulvus集群部署高光帧库、ASR库、sku参数库、章节库</li>
+<li>检索后用Qwen3重排后，调用大模型进行分类打分筛选</li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 <h2 id="项目经历"><a href="#项目经历" class="headerlink" title="项目经历"></a>项目经历</h2><h3 id="开源项目：Vue组件库"><a href="#开源项目：Vue组件库" class="headerlink" title="开源项目：Vue组件库"></a>开源项目：Vue组件库</h3><p><strong>技术栈：</strong> Vue3 + TypeScript + Vite</p>
 <ul>
