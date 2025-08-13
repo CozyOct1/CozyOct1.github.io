@@ -95,59 +95,35 @@ html.dataset.dark = localStorage.dark;
 <p><span style="background: #f0f8ff; border: 1px solid #d0e0f0; border-radius: 3px; padding: 2px 6px; font-family: monospace; font-size: 0.9em; margin: 0 8px;">LLM</span><span style="background: #f0f8ff; border: 1px solid #d0e0f0; border-radius: 3px; padding: 2px 6px; font-family: monospace; font-size: 0.9em; margin: 0 8px;">RAG</span><span style="background: #f0f8ff; border: 1px solid #d0e0f0; border-radius: 3px; padding: 2px 6px; font-family: monospace; font-size: 0.9em; margin: 0 8px;">Milvus</span></p>
 <p><strong>项目职责：</strong> 负责出卡判断服务的维护以及数码推荐服务和检索召回服务的优化</p>
 <p><strong>项目介绍：</strong></p>
-<ol>
-<li><p><strong>出卡判断服务</strong></p>
+<p><strong>出卡判断服务：</strong> 判断用户搜索是否符合展示数码推荐卡片条件。</p>
 <ul>
-<li><strong>功能：</strong><br>实时判断用户搜索是否符合展示数码推荐卡片条件。</li>
-<li><strong>流程：</strong><ul>
-<li>接收主搜接口请求，分析用户查询。</li>
-<li>基于预定义的数码行业关键词库（描述、品牌、功能、价格、评测等）构建正则规则引擎进行匹配与评分。</li>
-<li><strong>决策逻辑：</strong> 评分 ≥ 0.7 且命中强相关关键词，则触发展示带有可变标题的数码推荐卡片。</li>
+<li><strong>数码行业关键词库：</strong> 基于描述、品牌、功能、价格、评测等的数码行业关键词库构建正则规则引擎进行匹配与评分。</li>
+<li><strong>决策逻辑：</strong> 若评分 ≥ 0.7 且命中强相关关键词，则触发展示带有可变标题的数码推荐卡片。</li>
 </ul>
-</li>
-</ul>
-</li>
-<li><p><strong>数码推荐服务</strong></p>
+<p><strong>数码推荐服务：</strong> 提供用户聊天交互、服务停止控制、历史记录管理（标题&#x2F;聊天）、用户赞踩反馈、具体反馈收集等接口。</p>
 <ul>
-<li><strong>功能：</strong><br>提供可变标题展示、用户聊天交互、服务停止控制、历史记录管理（标题&#x2F;聊天）、用户赞踩反馈、具体反馈收集等接口。</li>
-<li><strong>流程：</strong><ul>
-<li><strong>Query 审核：</strong> 对用户 Query 进行敏感词过滤 + AI 机审。</li>
-<li><strong>Query 改写：</strong> 通过审核后，进行问题类型判断与数码 Query 规范化改写。</li>
-<li><strong>数码问题：</strong><br>调用检索召回服务 → 进行意图识别 → 根据召回结果和意图，分三种情况（检索为空 + 直接推荐 + 意图下钻）调用大模型生成不同的回答。</li>
-<li><strong>非数码问题：</strong><br>直接调用大模型生成普通对话回答。</li>
-<li><strong>结果审核：</strong> 对大模型生成的回答进行敏感词过滤 + AI 机审。</li>
+<li><strong>审核过滤：</strong> 对用户 Query 和最终回复进行敏感词过滤 + AI 机审。</li>
+<li><strong>Query 改写：</strong> 对用户 Query 进行问题类型判断以及对数码 Query 规范化改写。</li>
+<li><strong>检索召回：</strong> 部署 Milvus 向量数据库集群，管理高光帧特征、ASR 文本、SKU 参数、视频章节文本等多模态数据。基于 Milvus 向量数据库以及重排模型对改写后的数码 Query 进行检索，召回相关的数据信息。</li>
+<li><strong>意图识别：</strong> 根据改写后的数码 Query 判断用户的意图，即直接推荐和意图下钻。</li>
 </ul>
-</li>
-</ul>
-</li>
-<li><p><strong>检索召回服务</strong></p>
-<ul>
-<li><strong>功能：</strong><br>基于 Milvus 向量数据库以及重排模型，为推荐服务提供精准、多样化的信息召回。</li>
-<li><strong>流程：</strong><ul>
-<li><strong>意图识别：</strong> 根据 Query 判断检索信息的类型，以及对 Query 中的 Sku 相关信息进行提取和分类。</li>
-<li><strong>Query 分析：</strong> 提取正负向品牌，拆分子查询并改写主查询。</li>
-<li><strong>型号标准化：</strong> 对 Query 中的 Sku 相关信息进行模糊型号（时效、参数、品牌、热度）和具体型号的标准化处理。</li>
-<li><strong>用户评论召回：</strong><ul>
-<li><strong>无 sku：</strong> 检索评论库 → BGE 模型重排 → 聚合返回。</li>
-<li><strong>单 sku：</strong> 检索目标机型评论 → BGE 重排 → 调用大模型精确分类 → 聚合返回。</li>
-<li><strong>多 sku：</strong> 转交机型推荐服务处理。</li>
-</ul>
-</li>
-<li><strong>机型推荐召回：</strong><ul>
-<li><strong>无 sku：</strong> 主&#x2F;子查询四路召回检索 → 基于意图和型号条件过滤 → 聚合返回。</li>
-<li><strong>有 sku：</strong> 目标机型四路召回检索 → 聚合返回。</li>
-</ul>
-</li>
-<li><strong>四路召回检索：</strong><ul>
-<li><strong>Milvus 向量数据库集群部署：</strong> 部署 Milvus 向量数据库集群，管理高光帧特征、ASR 文本、SKU 参数、视频章节文本等多模态数据。</li>
-<li><strong>检索流程：</strong> 检索结果 → 使用 Qwen3 模型进行重排 (Rerank) → 调用大模型进行内容分类、打分、筛选 → 返回优质结果。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ol>
+<div style="display:none">
+3. **检索召回服务：** 
+    - **意图识别：** 根据 Query 判断检索信息的类型，以及对 Query 中的 Sku 相关信息进行提取和分类。
+    - **Query 分析：** 提取正负向品牌，拆分子查询并改写主查询。
+    - **型号标准化：** 对 Query 中的 Sku 相关信息进行模糊型号（时效、参数、品牌、热度）和具体型号的标准化处理。
+    - **用户评论召回：**
+        - **无 sku：** 检索评论库 → BGE 模型重排 → 聚合返回。
+        - **单 sku：** 检索目标机型评论 → BGE 重排 → 调用大模型精确分类 → 聚合返回。
+        - **多 sku：** 转交机型推荐服务处理。
+    - **机型推荐召回：**
+      - **无 sku：** 主/子查询四路召回检索 → 基于意图和型号条件过滤 → 聚合返回。
+      - **有 sku：** 目标机型四路召回检索 → 聚合返回。
+    - **四路召回检索：**
+      - **Milvus 向量数据库集群部署：** 部署 Milvus 向量数据库集群，管理高光帧特征、ASR 文本、SKU 参数、视频章节文本等多模态数据。
+      - **检索流程：** 检索结果 → 使用 Qwen3 模型进行重排 (Rerank) → 调用大模型进行内容分类、打分、筛选 → 返回优质结果。
+</div>
+
 <br>
 
 <div style="display: flex; align-items: center; gap: 5px;">
@@ -174,15 +150,6 @@ html.dataset.dark = localStorage.dark;
 <li><strong>Memory：</strong> 通过 Mysql 数据库存储用户的所有查询记录</li>
 <li><strong>Action：</strong> Sql 语句查询，可视化数据报表生成，Sql 语句自动纠错</li>
 <li><strong>Tool：</strong> Sql 执行工具，Python 执行工具</li>
-</ul>
-<p><strong>项目流程</strong></p>
-<ul>
-<li><strong>用户查询 → 意图识别</strong><ul>
-<li><strong>Sql 语句查询：</strong><br>Query 拆分 → Sql 语句生成 → Sql 语句执行 → Sql 语句自动纠错</li>
-<li><strong>可视化数据报表生成：</strong><br>Query 拆分 → Sql 语句生成 → Sql 语句执行 → Sql 语句自动纠错 → 可视化数据报表 Python 代码生成 → Python 代码执行</li>
-<li><strong>正常对话：</strong> LLM 正常对话</li>
-</ul>
-</li>
 </ul>
 <br>
 
